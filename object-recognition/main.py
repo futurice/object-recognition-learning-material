@@ -28,6 +28,26 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # The example code in this project will use the AKAZE detector/descriptor,
     # but feel free to try out other techniques.
 
+    # STEP 3
+    # With descriptors in hand it is now possible to actually try and match images.
+    # Simply matching can be done quite easily using a Brute-Force Matcher
+    # (https://docs.opencv.org/4.1.0/dc/dc3/tutorial_py_matcher.html), but if
+    # you want to determine whether the images actually match each other, this
+    # is the part where you'll have to set the criteria for what constitutes a
+    # match. One generally good practice is to filter out matches based on if they
+    # are distinct enough. This can be used using ratio test that you can read about
+    # here: https://docs.opencv.org/4.1.0/d5/d6f/tutorial_feature_flann_matcher.html.
+    # You might also want to check that you don't have duplicate mappings, i.e. two
+    # points in one image having the same point in the second image as their best
+    # match. In the case of duplicates it's best to just keep the one that is a
+    # closer match.
+    # A good way to check if the two images actually contain the same object is by
+    # using the homography (https://docs.opencv.org/4.1.0/d9/dab/tutorial_homography.html).
+    # The basic idea of the homography is to check if there is a way to transform
+    # one of the images so that the matching points in each image line up. By setting
+    # some limits on how much distortion (scaling and skewing primarily) is acceptable
+    # you can then say if the images contain the same object.
+
     return
 
 if __name__ == '__main__':
