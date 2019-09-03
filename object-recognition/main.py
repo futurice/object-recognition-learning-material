@@ -18,6 +18,16 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     #    is always some specific length. Scaling (and more):
     #    https://docs.opencv.org/trunk/da/d6e/tutorial_py_geometric_transformations.html
 
+    # STEP 2
+    # Once you have read your images as gray-scale it is time to extract interesting
+    # features from the images. Feature extraction has two parts to it: detecting
+    # interesting features and describing the area around the feature. For a short
+    # introduction to feature detection and descriptors, I recommend this article:
+    # https://blog.annaphilips.com/feature-detectors-descriptors-opencv/
+    # The article describes the different free alternatives provided by OpenCV.
+    # The example code in this project will use the AKAZE detector/descriptor,
+    # but feel free to try out other techniques.
+
     return
 
 if __name__ == '__main__':
