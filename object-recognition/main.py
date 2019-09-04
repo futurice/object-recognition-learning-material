@@ -27,6 +27,8 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # The article describes the different free alternatives provided by OpenCV.
     # The example code in this project will use the AKAZE detector/descriptor,
     # but feel free to try out other techniques.
+    # Useful stuff:
+    # https://docs.opencv.org/4.1.0/db/d27/tutorial_py_table_of_contents_feature2d.html
 
     # STEP 3
     # With descriptors in hand it is now possible to actually try and match images.
@@ -47,6 +49,9 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # one of the images so that the matching points in each image line up. By setting
     # some limits on how much distortion (scaling and skewing primarily) is acceptable
     # you can then say if the images contain the same object.
+    # Useful stuff:
+    # https://docs.opencv.org/4.1.0/d1/de0/tutorial_py_feature_homography.html
+    # https://docs.opencv.org/4.1.0/d7/dff/tutorial_feature_homography.html
 
     return
 
