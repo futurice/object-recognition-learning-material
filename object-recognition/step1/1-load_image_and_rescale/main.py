@@ -1,8 +1,12 @@
 import argparse
 import cv2
 from image_loading import load_gray_scale_image
+import logging
+import sys
 
 def find_model_in_target(path_to_model: str, path_to_target: str):
+
+    logging.debug("find_model_in_target: Called with path_to_model = {} and path_to_target = {}".format(path_to_model, path_to_target))
     
     # STEP 1
     # Regardless of your approach, you first need to load the chosen images from
@@ -20,9 +24,9 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     model_image = load_gray_scale_image(path_to_model)
     target_image = load_gray_scale_image(path_to_target)
 
-    cv2.namedWindow('Model image', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Model image', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Model image', model_image)
-    cv2.namedWindow('Target image', cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Target image', target_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -64,8 +68,23 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
 
     return
 
+
+def configure_logging(level: str):
+    logging.getLogger().setLevel(getattr(logging, level))
+    streamHandler = logging.StreamHandler(sys.stdout)
+    streamHandler.setFormatter(logging.Formatter("%(asctime)s [%(module)s] %(levelname)s: %(message)s"))
+    logging.getLogger().addHandler(streamHandler)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-l',
+        '--log',
+        dest='loglevel',
+        default='INFO',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help='Set the logging level')
     parser.add_argument(
         '-m',
         '--model-path',
@@ -81,6 +100,8 @@ if __name__ == '__main__':
         help='Path of the target image in which you are trying to find an object.'
     )
     args = parser.parse_args()
+    
+    configure_logging(args.loglevel)
 
     try:
         find_model_in_target(args.model_path, args.target_path)
