@@ -106,4 +106,4 @@ if __name__ == '__main__':
     try:
         find_model_in_target(args.model_path, args.target_path)
     except:
-        print('Unexpected exception occured!')
+        logging.exception('Unexpected exception occured!')

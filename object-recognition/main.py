@@ -1,7 +1,6 @@
 import argparse
 import logging
-
-logger = logging.getLogger()
+import sys
 
 def find_model_in_target(path_to_model: str, path_to_target: str):
     
@@ -55,8 +54,23 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
 
     return
 
+
+def configure_logging(level: str):
+    logging.getLogger().setLevel(getattr(logging, level))
+    streamHandler = logging.StreamHandler(sys.stdout)
+    streamHandler.setFormatter(logging.Formatter("%(asctime)s [%(module)s] %(levelname)s: %(message)s"))
+    logging.getLogger().addHandler(streamHandler)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-l',
+        '--log',
+        dest='loglevel',
+        default='INFO',
+        choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+        help='Set the logging level')
     parser.add_argument(
         '-m',
         '--model-path',
@@ -72,8 +86,10 @@ if __name__ == '__main__':
         help='Path of the target image in which you are trying to find an object.'
     )
     args = parser.parse_args()
+    
+    configure_logging(args.loglevel)
 
     try:
         find_model_in_target(args.model_path, args.target_path)
     except:
-        logger.exception('Unexpected exception occured!')
+        logging.exception('Unexpected exception occured!')
