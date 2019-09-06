@@ -26,9 +26,10 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
 
     cv2.namedWindow('Model image', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Model image', model_image)
+    
     cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
-
     cv2.imshow('Target image', target_image)
+    
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
