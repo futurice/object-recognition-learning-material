@@ -1,7 +1,9 @@
 import argparse
 import cv2
+from feature_detection_and_description import get_akaze_keypoints_and_descriptors
 from image_loading import load_gray_scale_image
 import logging
+import numpy as np
 import sys
 
 def find_model_in_target(path_to_model: str, path_to_target: str):
@@ -29,9 +31,6 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     
     cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Target image', target_image)
-    
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
     # STEP 2
     # Once you have read your images as gray-scale it is time to extract interesting
@@ -44,6 +43,20 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # but feel free to try out other techniques.
     # Useful stuff:
     # https://docs.opencv.org/4.1.0/db/d27/tutorial_py_table_of_contents_feature2d.html
+
+    model_keypoints, model_descriptors = get_akaze_keypoints_and_descriptors(model_image)
+    target_keypoints, target_descriptors = get_akaze_keypoints_and_descriptors(target_image)
+
+    model_keypoints_img = np.empty((model_image.shape[0], model_image.shape[1], 3), dtype=np.uint8)
+    cv2.drawKeypoints(model_image, model_keypoints, model_keypoints_img)
+    target_keypoints_img = np.empty((target_image.shape[0], target_image.shape[1], 3), dtype=np.uint8)
+    cv2.drawKeypoints(target_image, target_keypoints, target_keypoints_img)
+
+    cv2.namedWindow('Model keypoints', cv2.WINDOW_AUTOSIZE)
+    cv2.imshow('Model keypoints', model_keypoints_img)
+    
+    cv2.namedWindow('Target keypoints', cv2.WINDOW_AUTOSIZE)
+    cv2.imshow('Target keypoints', target_keypoints_img)
 
     # STEP 3
     # With descriptors in hand it is now possible to actually try and match images.
@@ -67,6 +80,9 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # Useful stuff:
     # https://docs.opencv.org/4.1.0/d1/de0/tutorial_py_feature_homography.html
     # https://docs.opencv.org/4.1.0/d7/dff/tutorial_feature_homography.html
+    
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
     return
 
