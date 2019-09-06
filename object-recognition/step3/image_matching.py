@@ -59,7 +59,7 @@ def remove_duplicate_mappings(matches):
 def filter_with_homography(matches, model_keypoints, target_keypoints):
 
     if len(matches) < MIN_MATCHES_FOR_HOMOGRAPHY:
-        logger.info("Not enough matches for homography. {} matches given, requires at least {}".format(len(matches), MIN_MATCHES_FOR_HOMOGRAPHY))
+        logging.info("Not enough matches for homography. {} matches given, requires at least {}".format(len(matches), MIN_MATCHES_FOR_HOMOGRAPHY))
         return []
 
     logging.debug("Matches before homography: {}".format(len(matches)))

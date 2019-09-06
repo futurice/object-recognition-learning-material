@@ -26,12 +26,6 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     model_image = load_gray_scale_image(path_to_model)
     target_image = load_gray_scale_image(path_to_target)
 
-    cv2.namedWindow('Model image', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Model image', model_image)
-    
-    cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Target image', target_image)
-
     # STEP 2
     # Once you have read your images as gray-scale it is time to extract interesting
     # features from the images. Feature extraction has two parts to it: detecting

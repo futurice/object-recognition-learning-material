@@ -19,4 +19,5 @@ def get_akaze_keypoints_and_descriptors(img):
     # Keypoints and descriptors can be calculated separately, but since they both require the same initial calculations
     # doing it in one go saves time.
     keypoints, descriptors = akaze.detectAndCompute(img, None)
+    logging.debug("Found {} keypoints".format(len(keypoints)))
     return keypoints, descriptors
