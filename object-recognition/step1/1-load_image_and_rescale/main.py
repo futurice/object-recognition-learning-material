@@ -13,13 +13,13 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # the given files. Most techniques use gray-scale images for detecting
     # features, so you'll probably want to load the images as gray-scale.
     # While loading the images, there are a couple of things you might want to consider:
-    # 1. Consider doing some smoothing of the image. Noise can otherwise cause unwanted
-    #    discrepancies when trying to find prominent features. Smoothing with OpenCV:
-    #    https://docs.opencv.org/3.1.0/d4/d13/tutorial_py_filtering.html
-    # 2. Scale the images up or down. It's a good idea to have some consitency in
+    # 1. Scale the images up or down. It's a good idea to have some consitency in
     #    the image sizes, so consider scaling the images so e.g. the longer side
     #    is always some specific length. Scaling (and more):
     #    https://docs.opencv.org/trunk/da/d6e/tutorial_py_geometric_transformations.html
+    # 2. Consider doing some smoothing of the image. Noise can otherwise cause unwanted
+    #    discrepancies when trying to find prominent features. Smoothing with OpenCV:
+    #    https://docs.opencv.org/3.1.0/d4/d13/tutorial_py_filtering.html
 
     model_image = load_gray_scale_image(path_to_model)
     target_image = load_gray_scale_image(path_to_target)
@@ -27,6 +27,7 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     cv2.namedWindow('Model image', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Model image', model_image)
     cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
+
     cv2.imshow('Target image', target_image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

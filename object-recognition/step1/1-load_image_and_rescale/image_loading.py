@@ -10,11 +10,21 @@ def load_gray_scale_image(path: str):
     original_height, original_width = img.shape[:2]
     logging.debug("Original height: {}. Original width: {}.".format(original_height, original_width))
 
+    # Calculate how much to scale the image up or down. MAX_DIMENSION_SIZE tells us how long the longest side of
+    # the image should be after scaling. This gives us some consistency between images.
     scale_factor = float(MAX_DIMENSION_SIZE) / float(original_width if original_width > original_height else original_width)
     logging.debug("Calculated scale factor: {}".format(scale_factor))
     if scale_factor == 1.0:
         return img
 
+    # Choose how interpolation should be done for new pixels, depending on if we are scaling up or down.
+    # Here we are using bicubic interpolation for zooming and an area based method for shrinking. These 
+    # are the given recommendations given here:
+    # https://docs.opencv.org/trunk/da/d6e/tutorial_py_geometric_transformations.html.
+    # For more information about the area based method, here is a good write-up:
+    # https://medium.com/@wenrudong/what-is-opencvs-inter-area-actually-doing-282a626a09b3
+    # The full list of interpolation flags can be found here:
+    # https://docs.opencv.org/trunk/da/d54/group__imgproc__transform.html#ga5bb5a1fea74ea38e1a5445ca803ff121
     interpolation_flag = cv2.INTER_CUBIC if scale_factor > 1.0 else cv2.INTER_AREA
     resized_img = cv2.resize(img, None, fx=scale_factor, fy=scale_factor, interpolation=interpolation_flag)
     resized_height, resized_width = resized_img.shape[:2]
