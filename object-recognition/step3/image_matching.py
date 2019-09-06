@@ -17,3 +17,25 @@ def do_2_nn_ratio_filtering(unfiltered_2_nn_matches):
             good_matches.append(nearest_neighbour)
     return good_matches
 
+def remove_duplicate_mappings(matches):
+
+    best_matches = []
+    mapped_model_indeces = []
+    match_distances = []
+
+    for match in matches:
+        model_idx = match.trainIdx
+        distance = match.distance
+
+        if not model_idx in mapped_model_indeces:
+            best_matches.append(match)
+            mapped_model_indeces.append(model_idx)
+            match_distances.append(distance)
+        else:
+            idx_of_model_idx = mapped_model_indeces.index(model_idx)
+            if distance < match_distances[idx_of_model_idx]:
+                best_matches[idx_of_model_idx] = match
+                match_distances[idx_of_model_idx] = distance
+                
+    return best_matches
+
