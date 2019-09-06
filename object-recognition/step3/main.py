@@ -2,6 +2,7 @@ import argparse
 import cv2
 from feature_detection_and_description import get_akaze_keypoints_and_descriptors
 from image_loading import load_gray_scale_image
+import image_matching
 import logging
 import numpy as np
 import sys
@@ -26,12 +27,6 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     model_image = load_gray_scale_image(path_to_model)
     target_image = load_gray_scale_image(path_to_target)
 
-    cv2.namedWindow('Model image', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Model image', model_image)
-    
-    cv2.namedWindow('Target image', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Target image', target_image)
-
     # STEP 2
     # Once you have read your images as gray-scale it is time to extract interesting
     # features from the images. Feature extraction has two parts to it: detecting
@@ -46,17 +41,6 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
 
     model_keypoints, model_descriptors = get_akaze_keypoints_and_descriptors(model_image)
     target_keypoints, target_descriptors = get_akaze_keypoints_and_descriptors(target_image)
-
-    model_keypoints_img = np.empty((model_image.shape[0], model_image.shape[1], 3), dtype=np.uint8)
-    cv2.drawKeypoints(model_image, model_keypoints, model_keypoints_img)
-    target_keypoints_img = np.empty((target_image.shape[0], target_image.shape[1], 3), dtype=np.uint8)
-    cv2.drawKeypoints(target_image, target_keypoints, target_keypoints_img)
-
-    cv2.namedWindow('Model keypoints', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Model keypoints', model_keypoints_img)
-    
-    cv2.namedWindow('Target keypoints', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Target keypoints', target_keypoints_img)
 
     # STEP 3
     # With descriptors in hand it is now possible to actually try and match images.
@@ -80,11 +64,30 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     # Useful stuff:
     # https://docs.opencv.org/4.1.0/d1/de0/tutorial_py_feature_homography.html
     # https://docs.opencv.org/4.1.0/d7/dff/tutorial_feature_homography.html
+
+    unfiltered_matches = image_matching.do_2_nn_brute_force_matching_hamming(model_descriptors, target_descriptors)
+    ratio_filtered_matches = image_matching.do_2_nn_ratio_filtering(unfiltered_matches)
+    duplicate_filtered_matches = image_matching.remove_duplicate_mappings(ratio_filtered_matches)
+    homography_filtered_matches = image_matching.filter_with_homography(duplicate_filtered_matches, model_keypoints, target_keypoints)
+
+    draw_matches('Unfiltered matches', [m for m, n in unfiltered_matches], target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches('Ratio filtered matches', ratio_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches('Duplicate filtered matches', duplicate_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches('Homography filtered matches', homography_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
     return
+
+
+def draw_matches(window_name, matches, target_image, target_keypoints, model_image, model_keypoints):
+
+    matches_img = np.empty((max(model_image.shape[0], target_image.shape[0]), model_image.shape[1] + target_image.shape[1], 3), dtype=np.uint8)
+    cv2.drawMatches(target_image, target_keypoints, model_image, model_keypoints, matches, matches_img, flags=cv2.DrawMatchesFlags_DEFAULT)
+    
+    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+    cv2.imshow(window_name, matches_img)
 
 
 def configure_logging(level: str):

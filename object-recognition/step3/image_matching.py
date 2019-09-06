@@ -5,6 +5,7 @@ import numpy as np
 
 MATCH_RATIO_THRESHOLD = 0.8
 RANSAC_THRESHOLD = 10.24
+MIN_MATCHES_FOR_HOMOGRAPHY = 10
 MAX_HOMOGRAPHY_DETERMINANT = 20
 MIN_HOMOGRAPHY_DETERMINANT = 0.05
 HOMOGRAPHY_SCALE_UPPER_LIMIT = 15
@@ -17,6 +18,7 @@ def do_2_nn_brute_force_matching_hamming(model_descriptors, target_descriptors):
     matches_2_nn = matcher.knnMatch(target_descriptors, model_descriptors, 2)
     return matches_2_nn
 
+
 def do_2_nn_ratio_filtering(unfiltered_2_nn_matches):
 
     good_matches = []
@@ -24,6 +26,7 @@ def do_2_nn_ratio_filtering(unfiltered_2_nn_matches):
         if nearest_neighbour.distance < MATCH_RATIO_THRESHOLD * second_nearest_neigbour.distance:
             good_matches.append(nearest_neighbour)
     return good_matches
+
 
 def remove_duplicate_mappings(matches):
 
@@ -47,16 +50,20 @@ def remove_duplicate_mappings(matches):
 
     return best_matches
 
+
 def filter_with_homography(matches, model_keypoints, target_keypoints):
 
-    target_keypoint_positions = np.float32([target_keypoints[m.queryIdx] for m in matches]).reshape(-1, 1, 2)
-    model_keypoint_positions = np.float32([model_keypoints[m.trainIdx] for m in matches]).reshape(-1, 1, 2)
+    if len(matches) < MIN_MATCHES_FOR_HOMOGRAPHY:
+        return []
+
+    target_keypoint_positions = np.float32([target_keypoints[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
+    model_keypoint_positions = np.float32([model_keypoints[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
 
     filtered_matches = []
 
     homography, mask = cv2.findHomography(target_keypoint_positions, model_keypoint_positions, cv2.RANSAC, RANSAC_THRESHOLD)
 
-    if not homography or homography.shape[0] < 3 or homography.shape[1] < 3:
+    if homography is None:
         return filtered_matches
 
     determinant = (homography[0, 0] * homography[1, 1]) - (homography[0, 1] * homography[1, 0])
