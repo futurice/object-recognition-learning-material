@@ -72,6 +72,12 @@ def remove_duplicate_mappings(matches):
 
 def filter_with_homography(matches, model_keypoints, target_keypoints):
 
+    # This function is based on the properties of transformation matrices. If you are not
+    # familiar or just rusty, I suggest taking a quick look at the following things:
+    # https://en.wikipedia.org/wiki/Transformation_matrix
+    # https://en.wikipedia.org/wiki/Affine_transformation
+    # https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
+
     # We must require some minimum amount of matches before trying to determine the homography.
     # If you calculate a valid homography with a low number of matches, it is hard to say if
     # it is because the images match or just because of luck (consider that you can calculate
