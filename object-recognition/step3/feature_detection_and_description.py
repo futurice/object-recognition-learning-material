@@ -12,6 +12,8 @@ def get_akaze_keypoints_and_descriptors(img):
     # can be found here: http://www.bmva.org/bmvc/2013/Papers/paper0013/paper0013.pdf.
     # A very condensed description can be found here: http://www.robesafe.com/personal/pablo.alcantarilla/kaze.html
     # AKAZE OpenCV refrence: https://docs.opencv.org/3.4/d8/d30/classcv_1_1AKAZE.html
+    # An important part of AKAZE descriptors is that they are scale and rotation invariant, i.e. when
+    # matching features the size and orientation of the features in each image doesn't effect the matching.
     logging.debug("Creating AKAZE with threshold {}, {} octaves, and {} octave layers".format(
         AKAZE_RESPONSE_THRESHOLD, AKAZE_OCTAVES, AKAZE_OCTAVE_LAYERS
     ))
