@@ -6,10 +6,10 @@ import numpy as np
 MATCH_RATIO_THRESHOLD = 0.8
 RANSAC_THRESHOLD = 10.24
 MIN_MATCHES_FOR_HOMOGRAPHY = 10
-MAX_HOMOGRAPHY_DETERMINANT = 100
-MIN_HOMOGRAPHY_DETERMINANT = 0.01
-HOMOGRAPHY_SCALE_UPPER_LIMIT = 20
-HOMOGRAPHY_SCALE_LOWER_LIMIT = 0.05
+MAX_HOMOGRAPHY_TOTAL_SCALING = 100
+MIN_HOMOGRAPHY_TOTAL_SCALING = 0.01
+MAX_BASE_VECTOR_SCALING = 20
+MIN_BASE_VECTOR_SCALING = 0.05
 HOMOGRAPHY_PERSPECTIVE_LIMIT = 0.0025
 
 
@@ -112,30 +112,30 @@ def filter_with_homography(matches, model_keypoints, target_keypoints):
     # in either direction.
     determinant = (homography[0, 0] * homography[1, 1]) - (homography[0, 1] * homography[1, 0])
     logging.debug("Determinant: {}".format(determinant))
-    if determinant > MAX_HOMOGRAPHY_DETERMINANT or determinant < MIN_HOMOGRAPHY_DETERMINANT:
+    if determinant > MAX_HOMOGRAPHY_TOTAL_SCALING or determinant < MIN_HOMOGRAPHY_TOTAL_SCALING:
         logging.info("Calculated homography has a determinant outside allowed values")
         return filtered_matches
 
-    # N1 and N2 check how much basis each basis vector (https://en.wikipedia.org/wiki/Basis_(linear_algebra))
+    # Here we check how much each basis vector (https://en.wikipedia.org/wiki/Basis_(linear_algebra))
     # is scaled during transformation (the columns of the upper left 2 x 2 matrix give the basis vectors; 
     # if you wonder how, see what happens if you multiply (1, 0) and (0, 1) with the matrix). We check this
     # these separately, since the determinant can stay relatively close to 1 if one basis vector is scaled
     # up while the other is scaled down.
-    N1 = math.sqrt(math.pow(homography[0, 0], 2) + math.pow(homography[1, 0], 2))
-    logging.debug("N1: {}".format(N1))
-    if N1 > HOMOGRAPHY_SCALE_UPPER_LIMIT or N1 < HOMOGRAPHY_SCALE_LOWER_LIMIT:
+    x_basis_scaling = math.sqrt(math.pow(homography[0, 0], 2) + math.pow(homography[1, 0], 2))
+    logging.debug("X-basis scaling: {}".format(x_basis_scaling))
+    if x_basis_scaling > MAX_BASE_VECTOR_SCALING or x_basis_scaling < MIN_BASE_VECTOR_SCALING:
         logging.info("Calculated homography scales x-basis vector beyond trusted limits.")
         return filtered_matches
-    N2 = math.sqrt(math.pow(homography[0, 1], 2) + math.pow(homography[1, 1], 2))
-    logging.debug("N2: {}".format(N2))
-    if N2 > HOMOGRAPHY_SCALE_UPPER_LIMIT or N2 < HOMOGRAPHY_SCALE_LOWER_LIMIT:
+    y_basis_scaling = math.sqrt(math.pow(homography[0, 1], 2) + math.pow(homography[1, 1], 2))
+    logging.debug("Y-basis scaling: {}".format(y_basis_scaling))
+    if y_basis_scaling > MAX_BASE_VECTOR_SCALING or y_basis_scaling < MIN_BASE_VECTOR_SCALING:
         logging.info("Calculated homography scales y-basis vector beyond trusted limits.")
         return filtered_matches
 
     # For us to trust the homography, it should also have very low levels of perspectivity.
-    N3 = math.sqrt(math.pow(homography[2, 0], 2) + math.pow(homography[2, 1], 2))
-    logging.debug("N3: {}".format(N3))
-    if N3 > HOMOGRAPHY_PERSPECTIVE_LIMIT:
+    perspectivity = math.sqrt(math.pow(homography[2, 0], 2) + math.pow(homography[2, 1], 2))
+    logging.debug("Perspectivity: {}".format(perspectivity))
+    if perspectivity > HOMOGRAPHY_PERSPECTIVE_LIMIT:
         logging.info("Calculated homography distorts perspective beyond trusted bounds.")
         return filtered_matches
 
