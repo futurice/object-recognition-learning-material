@@ -46,11 +46,13 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     target_keypoints_img = np.empty((target_image.shape[0], target_image.shape[1], 3), dtype=np.uint8)
     cv2.drawKeypoints(target_image, target_keypoints, target_keypoints_img)
 
-    cv2.namedWindow('Model keypoints', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Model keypoints', model_keypoints_img)
+    model_window_name = "Model keypoints: {}".format(len(model_keypoints))
+    cv2.namedWindow(model_window_name, cv2.WINDOW_AUTOSIZE)
+    cv2.imshow(model_window_name, model_keypoints_img)
     
-    cv2.namedWindow('Target keypoints', cv2.WINDOW_AUTOSIZE)
-    cv2.imshow('Target keypoints', target_keypoints_img)
+    target_window_name = "Target keypoints: {}".format(len(target_keypoints))
+    cv2.namedWindow(target_window_name, cv2.WINDOW_AUTOSIZE)
+    cv2.imshow(target_window_name, target_keypoints_img)
 
     # STEP 3
     # With descriptors in hand it is now possible to actually try and match images.

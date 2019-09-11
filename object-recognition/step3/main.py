@@ -70,10 +70,10 @@ def find_model_in_target(path_to_model: str, path_to_target: str):
     duplicate_filtered_matches = image_matching.remove_duplicate_mappings(ratio_filtered_matches)
     homography_filtered_matches = image_matching.filter_with_homography(duplicate_filtered_matches, model_keypoints, target_keypoints)
 
-    draw_matches('Unfiltered matches', [m for m, n in unfiltered_matches], target_image, target_keypoints, model_image, model_keypoints)
-    draw_matches('Ratio filtered matches', ratio_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
-    draw_matches('Duplicate filtered matches', duplicate_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
-    draw_matches('Homography filtered matches', homography_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches("Unfiltered matches: {}".format(len(unfiltered_matches)), [m for m, n in unfiltered_matches], target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches("Ratio filtered matches: {}".format(len(ratio_filtered_matches)), ratio_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches("Duplicate filtered matches: {}".format(len(duplicate_filtered_matches)), duplicate_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
+    draw_matches("Homography filtered matches: {}".format(len(homography_filtered_matches)), homography_filtered_matches, target_image, target_keypoints, model_image, model_keypoints)
     
     cv2.waitKey(0)
     cv2.destroyAllWindows()
